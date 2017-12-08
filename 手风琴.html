@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        ul {
+            list-style: none
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        div {
+            width: 1150px;
+            height: 400px;
+            margin: 50px auto;
+            border: 1px solid red;
+            overflow: hidden;
+        }
+
+        div li {
+            width: 240px;
+            height: 400px;
+            float: left;
+
+        }
+
+        div ul {
+            width: 1300px;
+        }
+    </style>
+</head>
+<body>
+<div id="box">
+    <ul>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+<script>
+    var box=document.getElementById("box");
+    var ul=box.children[0];
+    var lis=ul.children;
+    for (var i = 0; i < lis.length; i++) {
+        lis[i].style.backgroundImage="url(images/"+(i+1)+".jpg)";
+       lis[i].onmouseover=function(){
+           for (var i = 0; i < lis.length; i++) {
+               animate(lis[i], {"width":100});
+
+           }
+           animate(this, {"width":800});
+       };
+
+    }
+    box.onmouseout=function(){
+        for (var i = 0; i < lis.length; i++) {
+            animate(lis[i], {"width":240});
+
+        }
+    }
+    function animate(obj,json) {//josn,attr:target
+        clearInterval(obj.timer);
+        obj.timer = setInterval(function () {
+            var flag=true;
+            for(var k in json){
+                if(k==="opacity"){
+                //var leader = parseInt(getStyle(obj,k)) ||0;
+                var leader = getStyle(obj,k)*100;
+                // 0 || 1 结果是1 那么如果透明度当前的值是0 就会变成1
+                //所以这里不能给默认值 而且也没有必要
+                //透明度没有单位px 所以也不用parseInt 参与运算自动变为数字
+
+                var target=json[k]*100;
+                var step = (target - leader) / 10;
+                step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                leader = leader + step;
+                obj.style[k] = leader/100;
+                }else{
+                    var leader = parseInt(getStyle(obj, k)) || 0;
+                    var target = json[k];
+                    var step = (target - leader) / 10;
+                    step = step > 0 ? Math.ceil(step) : Math.floor(step);
+                    leader = leader + step;
+                    obj.style[k] = leader + "px";
+
+                }//opacity没有单位;
+                if (leader !== target) {
+                    flag=false;
+                }
+                if(flag){
+                    clearInterval(obj.timer);
+                    if(fn){//如果有才调用;
+                        fn()//动画执行完成后执行;
+                    }
+                }
+
+            }
+
+        }, 15);
+    }
+    function getStyle(obj,attr){
+        if(window.getComputedStyle){
+            return window.getComputedStyle(obj,null)[attr];
+        }else{
+            return obj.currentStyle[attr];
+        }
+
+
+    }
+
+</script>
+</body>
+</html>
